@@ -29,7 +29,7 @@ For subsequent stage training, `--joint_idx` argument is needed.
 `--resume` argument is also supported.
 
 
-To check current training state, please open `http://localhost:8889/`.
+To check current training state, please open `http://localhost:8889/` (port number can be changed by `settings.json`).
 The error rate graph and visualized images can be seen.
 
 If you want to use GPU, please set `GPU` parameter in `settings.json` to a positive number.
@@ -40,7 +40,7 @@ Execute the following command, and open `http://localhost:8889/`.
 ```
 ./scripts/use_model.py
 ```
-Settings is common with training ('settings.json').
+Settings is common with training (`settings.json`).
 
 ## Results ##
 
