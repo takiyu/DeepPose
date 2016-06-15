@@ -47,4 +47,4 @@ Settings is common with training ('settings.json').
 ### First stage ###
 <img src="https://raw.githubusercontent.com/takiyu/DeepPose/master/screenshots/first_stage_result.jpg">
 
-Subsequent stages is training now.
+Subsequent stages are training now.
