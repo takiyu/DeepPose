@@ -1,0 +1,28 @@
+{
+    "GPU": -1,
+    "BEST_MODEL": "./data/best_model%s.npz",
+    "RESUME_MODEL": "./data/resume/model%s.npz",
+    "RESUME_OPTIMIZER": "./data/resume/optimizer%s.npz",
+    "RESUME_LOSS": "./data/resume/loss%s.npz",
+
+    "SERVER_PORT": 8889,
+
+    "FLIC_FULL_PATH": "/home/takiyu/Datasets/HumanBodyPose/FLIC/FLIC-full",
+    "FLIC_PLUS_PATH": "/home/takiyu/Datasets/HumanBodyPose/FLIC/tr_plus_indices.mat",
+
+    "FACIAL_NORMALIZER_PATH": "./data/facial_normalizer.npy",
+    "PRECOMP_TRAIN": "./data/precomp/train%s.npz",
+    "PRECOMP_TEST": "./data/precomp/test%s.npz",
+
+    "N_NORMALIZER_TRAIN": 1000,
+    "BBOX_SIGMA" : 1.5,
+    "N_EPOCH": 500,
+    "BATCH_SIZE": 16,
+    "N_BUFFERING_BATCH": 10,
+    "N_VIEW_IMG": 10,
+
+    "CASCADE_PATHS": [
+        "/usr/share/opencv/haarcascades/haarcascade_frontalface_alt.xml",
+        "/usr/share/opencv/lbpcascades/lbpcascade_frontalface.xml"
+    ]
+}
