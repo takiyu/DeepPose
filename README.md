@@ -3,7 +3,7 @@ This project needs more tuning. If you have some advice, please tell me!
 
 ## Features ##
 * `Chainer` implementation.
-* Subsequent stages support.
+* Subsequent stages.
 * Image viewer on your web browser. (`Flask` and `flask-socketio` are needed)
 
 ## Supported Datasets ##
@@ -47,4 +47,4 @@ Settings is common with training ('settings.json').
 ### First stage ###
 <img src="https://raw.githubusercontent.com/takiyu/DeepPose/master/screenshots/first_stage_result.jpg">
 
-Subsequent stage is in preparation.
+Subsequent stages is training now.
