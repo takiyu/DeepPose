@@ -1,5 +1,5 @@
 # Deep Pose #
-This project needs more tuning. If you have some advice, please tell me!
+I think more tuning is possible. If you have some advice, please tell me!
 
 ## Features ##
 * `Chainer` implementation
