@@ -2,9 +2,9 @@
 This project needs more tuning. If you have some advice, please tell me!
 
 ## Features ##
-* `Chainer` implementation.
-* Subsequent stages.
-* Image viewer on your web browser. (`Flask` and `flask-socketio` are needed)
+* `Chainer` implementation
+* __Subsequent stages__
+* Image viewer on web browsers. (`Flask` and `flask-socketio` are needed)
 
 ## Supported Datasets ##
 - [x] FLIC
