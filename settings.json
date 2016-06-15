@@ -7,8 +7,8 @@
 
     "SERVER_PORT": 8889,
 
-    "FLIC_FULL_PATH": "/home/takiyu/Datasets/HumanBodyPose/FLIC/FLIC-full",
-    "FLIC_PLUS_PATH": "/home/takiyu/Datasets/HumanBodyPose/FLIC/tr_plus_indices.mat",
+    "FLIC_FULL_PATH": "/home/someone/FLIC/FLIC-full",
+    "FLIC_PLUS_PATH": "/home/someone/FLIC/tr_plus_indices.mat",
 
     "FACIAL_NORMALIZER_PATH": "./data/facial_normalizer.npy",
     "PRECOMP_TRAIN": "./data/precomp/train%s.npz",
