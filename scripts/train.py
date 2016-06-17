@@ -113,7 +113,7 @@ def precompute_params(stage, prev_loader, normalizer=None, detector=None):
         base_joint_que = multiprocessing.Queue()  # for stage >= 2
 
         # First pose convert function
-        def first_conv_func(img, joint, param):
+        def first_conv_func(img, joint, param, tag):
             facial_rect = param
             width, height = alexnet.IMG_WIDTH, alexnet.IMG_HEIGHT
             mat = normalizer.calc_matrix(width, height, facial_rect)
@@ -140,7 +140,7 @@ def precompute_params(stage, prev_loader, normalizer=None, detector=None):
                     new_params.append(joint)
 
         # Subsequent pose convert function
-        def subseq_conv_func(img, joint, param):
+        def subseq_conv_func(img, joint, param, tag):
             pred_joint = param
             width, height = alexnet.IMG_WIDTH, alexnet.IMG_HEIGHT
             # Crop pose at current joint index
@@ -213,8 +213,8 @@ if __name__ == '__main__':
         flic = datasets.Flic()
         flic.load(settings.FLIC_FULL_PATH, settings.FLIC_PLUS_PATH)
         # DEBUG: limit data size
-        # flic.train_data.limit_size(20)
-        # flic.test_data.limit_size(20)
+        flic.train_data.limit_size(20)
+        flic.test_data.limit_size(20)
         # Set as previous loader
         prev_train_loader = flic.train_data
         prev_test_loader = flic.test_data
@@ -278,35 +278,38 @@ if __name__ == '__main__':
     pose_comp_que = multiprocessing.Queue()  # for stage >= 1
 
     # First pose convert function
-    def first_conv_func(img, joint, param):
+    def first_conv_func(img, joint, param, tag):
         facial_rect = param
         width, height = alexnet.IMG_WIDTH, alexnet.IMG_HEIGHT
+        rect_scale = None
         # Random cropping
-        rect_scale = np.random.normal(loc=1.0, scale=0.3)
-        rect_scale = min(max(rect_scale, 0.95), 1.1)  # clamp
+        if tag == 'train':
+            rect_scale = np.random.normal(loc=1.0, scale=0.3)
+            rect_scale = min(max(rect_scale, 0.95), 1.1)  # clamp
         mat = normalizer.calc_matrix(width, height, facial_rect,
                                      rect_scale=rect_scale)
         # Random flipping
-        if np.random.randint(2) == 0:
+        if tag == 'train' and np.random.randint(2) == 0:
             mat = normalizers.calc_flip_matrix(width, height).dot(mat)
         # Apply
         img, joint = normalizers.transform_pose(img, joint, mat, width, height)
         return img, joint
 
     # Subsequent pose convert function
-    def subseq_conv_func(img, joint, param):
+    def subseq_conv_func(img, joint, param, tag):
         pred_joint = param
         width, height = alexnet.IMG_WIDTH, alexnet.IMG_HEIGHT
         # Fix back shot
         joint = normalizers.fix_back_shot(joint)
         pred_joint = normalizers.fix_back_shot(pred_joint)
-        # Padding
         center = pred_joint[JOINT_IDX]
-        diff = joint[JOINT_IDX] - center
-        theta = math.atan2(diff[1], diff[0])
-        length = np.random.normal(loc=0.0, scale=10.0)  # add noise
-        theta += np.random.normal(loc=0.0, scale=0.3)
-        center += length * np.array([math.cos(theta), math.sin(theta)])
+        # Padding
+        if tag == 'train':
+            diff = joint[JOINT_IDX] - center
+            theta = math.atan2(diff[1], diff[0])
+            length = np.random.normal(loc=0.0, scale=10.0)  # add noise
+            theta += np.random.normal(loc=0.0, scale=0.3)
+            center += length * np.array([math.cos(theta), math.sin(theta)])
         mat = normalizers.calc_cropping_matrix(width, height, center,
                                                pred_joint,
                                                sigma=settings.BBOX_SIGMA)

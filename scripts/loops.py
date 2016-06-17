@@ -14,7 +14,12 @@ logger.addHandler(NullHandler())
 
 def load_pose_loop(tag, out_que, next_evt, loader, batch_size, conv_func=None,
                    random=False):
-    ''' Pose data loading loop '''
+    ''' Pose data loading loop
+    Arguments:
+        conv_func: data convert function.
+                   (img, joint, param, tag) will be passed and should
+                   return (img, joint) or (imgs, joints).
+    '''
     logger.info('Start loading loop (%s)', tag)
 
     # Loading loop
@@ -31,7 +36,8 @@ def load_pose_loop(tag, out_que, next_evt, loader, batch_size, conv_func=None,
             perm = np.arange(0, loader.get_size())
         for i in six.moves.xrange(0, perm.shape[0], batch_size):
             # Load pose
-            imgs, joints = loader.get_data(perm[i: i + batch_size], conv_func)
+            imgs, joints = loader.get_data(perm[i: i + batch_size],
+                                           conv_func, tag)
             out_que.put((imgs, joints))
             logger.debug('Put one batch (%s)', tag)
 

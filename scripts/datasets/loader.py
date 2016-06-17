@@ -79,13 +79,13 @@ class PoseDataLoader(object):
         self.set_from_raw(np_img_paths, np_joints, np_params)
         return True
 
-    def get_data(self, indices=None, conv_func=None):
+    def get_data(self, indices=None, conv_func=None, tag=None):
         ''' Load certain pose data
         Arguments:
             indices: data indices (int, int iterable or None)
             conv_func: data convert function.
-                       (img, joint, param) will be passed and should return
-                       (img, joint) or (imgs, joints)
+                       (img, joint, param [, tag]) will be passed and should
+                       return (img, joint) or (imgs, joints).
         '''
         # single load mode
         def single_mode(index):
@@ -98,7 +98,10 @@ class PoseDataLoader(object):
             if conv_func is None:
                 return img, joint
             else:
-                return conv_func(img, joint, param)
+                if tag is None:
+                    return conv_func(img, joint, param)
+                else:
+                    return conv_func(img, joint, param, tag)
 
         # multi load mode
         def multi_mode(indices):
@@ -128,7 +131,10 @@ class PoseDataLoader(object):
             new_img_list = list()
             new_joint_list = list()
             for img, joint, param in zip(imgs, joints, params):
-                new_img, new_joint = conv_func(img, joint, param)
+                if tag is None:
+                    new_img, new_joint = conv_func(img, joint, param)
+                else:
+                    new_img, new_joint = conv_func(img, joint, param, tag)
                 # DEBUG: show image
                 # cv2.imshow('img', new_img)
                 # cv2.waitKey()
