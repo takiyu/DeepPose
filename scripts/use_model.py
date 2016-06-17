@@ -27,6 +27,11 @@ log_initializer.setRootLevel(DEBUG)
 logger = getLogger(__name__)
 imgviewer.logger.setLevel(INFO)
 
+# for Python 2.x
+try:
+    tmp = FileNotFoundError
+except NameError:
+    FileNotFoundError = IOError
 
 # Arguments
 parser = argparse.ArgumentParser()

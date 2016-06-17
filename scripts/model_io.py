@@ -16,6 +16,12 @@ from logging import getLogger, NullHandler
 logger = getLogger(__name__)
 logger.addHandler(NullHandler())
 
+# for Python 2.x
+try:
+    tmp = FileNotFoundError
+except NameError:
+    FileNotFoundError = IOError
+
 
 def create_modifier(stage_cnt, joint_idx):
     if stage_cnt == 0:
