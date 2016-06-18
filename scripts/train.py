@@ -295,6 +295,30 @@ if __name__ == '__main__':
         img, joint = normalizers.transform_pose(img, joint, mat, width, height)
         return img, joint
 
+    if STAGE > 0:
+        logger.info('Sum up joint differences')
+        diffs = list()
+
+        # Sum up the difference
+        def conv_func(img, joint, param):
+            pred_joint = param
+            # Fix back shots
+            joint = normalizers.fix_back_shot(joint)
+            pred_joint = normalizers.fix_back_shot(pred_joint)
+            # Predicting difference
+            diff = joint[JOINT_IDX] - pred_joint[JOINT_IDX]
+            diffs.append(diff)
+
+        # Apply for all test poses
+        for i in six.moves.xrange(test_loader.get_size()):
+            test_loader.get_data(i, conv_func)
+        # Calculate 2D parameters
+        diffs = np.asarray(diffs)
+        diff_mean = np.mean(diffs, axis=0)  # [x, y]
+        diff_std = np.sqrt(np.mean((diffs - diff_mean) ** 2, axis=0))
+        logger.info('Difference mean: %ss', str(diff_mean))
+        logger.info('Difference std: %s', str(diff_std))
+
     # Subsequent pose convert function
     def subseq_conv_func(img, joint, param, tag):
         pred_joint = param
@@ -305,11 +329,9 @@ if __name__ == '__main__':
         center = pred_joint[JOINT_IDX]
         # Padding
         if tag == 'train':
-            diff = joint[JOINT_IDX] - center
-            theta = math.atan2(diff[1], diff[0])
-            length = np.random.normal(loc=0.0, scale=10.0)  # add noise
-            theta += np.random.normal(loc=0.0, scale=0.3)
-            center += length * np.array([math.cos(theta), math.sin(theta)])
+            # Add noise
+            center[0] += np.random.normal(loc=diff_mean[0], scale=diff_std[0])
+            center[1] += np.random.normal(loc=diff_mean[1], scale=diff_std[1])
         mat = normalizers.calc_cropping_matrix(width, height, center,
                                                pred_joint,
                                                sigma=settings.BBOX_SIGMA)

@@ -46,9 +46,9 @@ def draw_joint(img, joint, thickness=3, color_scale=1):
     if len(joint) == 1:
         # TODO fix color decision method
         if color_scale < 0.5:
-            color = (0, 1, 0)
+            color = (0, 0, 0.5)
         else:
-            color = (0, 0, 1)
+            color = (0, 1, 0)
         # move the origin to image center
         pt = joint[0] + np.array([img.shape[1] / 2, img.shape[0] / 2])
         # draw dot as circle
