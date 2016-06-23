@@ -21,9 +21,9 @@ import model_io
 import settings
 
 # logging
-from logging import getLogger, INFO
+from logging import getLogger, INFO, DEBUG
 log_initializer.setFmt()
-log_initializer.setRootLevel(INFO)
+log_initializer.setRootLevel(DEBUG)
 logger = getLogger(__name__)
 imgviewer.logger.setLevel(INFO)
 
