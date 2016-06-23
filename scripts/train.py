@@ -213,8 +213,8 @@ if __name__ == '__main__':
         flic = datasets.Flic()
         flic.load(settings.FLIC_FULL_PATH, settings.FLIC_PLUS_PATH)
         # DEBUG: limit data size
-        flic.train_data.limit_size(20)
-        flic.test_data.limit_size(20)
+        # flic.train_data.limit_size(20)
+        # flic.test_data.limit_size(20)
         # Set as previous loader
         prev_train_loader = flic.train_data
         prev_test_loader = flic.test_data
