@@ -24,5 +24,7 @@
     "CASCADE_PATHS": [
         "/usr/share/opencv/haarcascades/haarcascade_frontalface_alt.xml",
         "/usr/share/opencv/lbpcascades/lbpcascade_frontalface.xml"
-    ]
+    ],
+
+    "NO_PROCESS": false
 }

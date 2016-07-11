@@ -36,9 +36,12 @@ def get_inited_pose_normalizer(train_loader, face_detector=None):
 
 
 def start_process(target, *args):
-    process = multiprocessing.Process(target=target, args=args)
-    process.daemon = True
-    process.start()
+    if settings.NO_PROCESS:
+        start_thread(target, *args)
+    else:
+        process = multiprocessing.Process(target=target, args=args)
+        process.daemon = True
+        process.start()
 
 
 def start_thread(target, *args):
