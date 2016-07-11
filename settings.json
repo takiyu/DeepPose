@@ -26,5 +26,5 @@
         "/usr/share/opencv/lbpcascades/lbpcascade_frontalface.xml"
     ],
 
-    "NO_PROCESS": false
+    "ASYNC_MODE": "thread"
 }

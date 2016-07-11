@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from convenient import start_process
+from convenient import start_async
 import six
 import multiprocessing
 import numpy as np
@@ -169,10 +169,10 @@ def precompute_params(xp, stage, joint_idx, prev_loader, normalizer=None,
             joint_scale_mode = '+-'
 
         # Data loader thread
-        start_process(loops.load_pose_loop, 'predict', data_que, load_evt,
+        start_async(loops.load_pose_loop, 'predict', data_que, load_evt,
                       prev_loader, settings.BATCH_SIZE, conv_func, False)
         # Prediction loop process
-        start_process(loops.predict_pose_loop, xp, data_que, load_evt,
+        start_async(loops.predict_pose_loop, xp, data_que, load_evt,
                       out_que, load_model_func, joint_scale_mode)
 
         # Receive predicted joints and register params

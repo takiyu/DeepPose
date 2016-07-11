@@ -35,16 +35,15 @@ def get_inited_pose_normalizer(train_loader, face_detector=None):
     return normalizer
 
 
-def start_process(target, *args):
-    if settings.NO_PROCESS:
-        start_thread(target, *args)
-    else:
+def start_async(target, *args):
+    if settings.ASYNC_MODE == 'thread':
+        thread = threading.Thread(target=target, args=args)
+        thread.daemon = True
+        thread.start()
+    elif settings.ASYNC_MODE == 'process':
         process = multiprocessing.Process(target=target, args=args)
         process.daemon = True
         process.start()
-
-
-def start_thread(target, *args):
-    thread = threading.Thread(target=target, args=args)
-    thread.daemon = True
-    thread.start()
+    else:
+        logger.critical('Invalid async mode: %s', settings.ASYNC_MODE)
+        exit(1)

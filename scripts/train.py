@@ -10,7 +10,7 @@ from chainer import cuda
 
 import alexnet
 import convenient
-from convenient import start_process
+from convenient import start_async
 import datasets
 from image_servers import imgviewer
 import log_initializer
@@ -222,21 +222,20 @@ if __name__ == '__main__':
         joint_scale_mode = '+-'
 
     # Train data loader process
-    start_process(loops.load_pose_loop, 'train', train_data_que, train_load_evt,
-                  train_loader, settings.BATCH_SIZE, conv_func, True)
+    start_async(loops.load_pose_loop, 'train', train_data_que, train_load_evt,
+                train_loader, settings.BATCH_SIZE, conv_func, True)
     # Test data loader process
-    start_process(loops.load_pose_loop, 'test', test_data_que, test_load_evt,
-                  test_loader, settings.BATCH_SIZE, conv_func, True)
+    start_async(loops.load_pose_loop, 'test', test_data_que, test_load_evt,
+                test_loader, settings.BATCH_SIZE, conv_func, True)
     # Training loop process
-    start_process(loops.train_pose_loop, xp, settings.N_EPOCH,
-                  train_data_que, train_load_evt,
-                  test_data_que, test_load_evt, visual_que,
-                  load_states_func, save_states_func, joint_scale_mode)
+    start_async(loops.train_pose_loop, xp, settings.N_EPOCH, train_data_que,
+                train_load_evt, test_data_que, test_load_evt, visual_que,
+                load_states_func, save_states_func, joint_scale_mode)
     # Image server process
     imgviewer.start(server_que, stop_page=False, port=settings.SERVER_PORT)
     # Visualizer loop process
-    start_process(loops.visualize_pose_loop, visual_que, server_que,
-                  settings.N_VIEW_IMG)
+    start_async(loops.visualize_pose_loop, visual_que, server_que,
+                settings.N_VIEW_IMG)
 
     # Wait for exit
     try:
