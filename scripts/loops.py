@@ -38,6 +38,10 @@ def load_pose_loop(tag, out_que, next_evt, loader, batch_size, conv_func=None,
             # Load pose
             imgs, joints = loader.get_data(perm[i: i + batch_size],
                                            conv_func, tag)
+            # single -> multi
+            if imgs.ndim == 3:
+                imgs = imgs.reshape((1,) + imgs.shape)
+                joints = joints.reshape((1,) + joints.shape)
             out_que.put((imgs, joints))
             logger.debug('Put one batch (%s)', tag)
 
