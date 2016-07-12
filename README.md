@@ -25,7 +25,7 @@ I think more tuning is possible. If you have some advice, please tell me!
 * Flask 0.10.1
 * Flask_SocketIO 2.2
 
-### Windows 7 ###
+### Windows 7 (not recommend) ###
 * Python 2.7
 * Chainer 1.9.1
 * OpenCV 3.1.0
@@ -35,7 +35,7 @@ I think more tuning is possible. If you have some advice, please tell me!
 
 ## Training ##
 First, download `FLIC FULL` and `FLIC PLUS` to some directory, and set the path to `settings.json`.
-And also fix `CASCADE_PATHS` for your environment.
+And also fix `CASCADE_PATHS` to detect faces for your environment.
 
 To start training, please execute the following command.
 
@@ -74,7 +74,7 @@ Settings is common with training (`settings.json`).
 Subsequent stages are training now.
 
 ## Async Mode Setting ##
-This project uses Python `threading` or `multiprocessing` package and it can be configured by `ASYNC_MODE` in `settings.json`
+This project uses Python `threading` or `multiprocessing` package and it can be configured by `ASYNC_MODE` in `settings.json`.
 On Linux `process` mode is better due to the speed, but on Windows only `thread` mode is valid.
 
 ## TODO ##
