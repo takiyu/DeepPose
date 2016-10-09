@@ -11,7 +11,7 @@ from chainer import cuda
 
 import alexnet
 import convenient
-from convenient import start_process
+from convenient import start_async
 import datasets
 from image_servers import imgviewer
 import log_initializer
@@ -122,7 +122,7 @@ if __name__ == '__main__':
     imgviewer.start(server_que, stop_page=False, port=settings.SERVER_PORT)
     # Visualizer loop process
     visual_que = multiprocessing.Queue()
-    start_process(loops.visualize_pose_loop, visual_que, server_que)
+    start_async(loops.visualize_pose_loop, visual_que, server_que)
 
     # Draw randomly
     show_cnt = 0
