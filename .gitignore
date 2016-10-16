@@ -4,4 +4,6 @@
 *.swo
 *.pyc
 *__pycache__
+*.npz
+*.npy
 data

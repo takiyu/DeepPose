@@ -21,21 +21,30 @@ except Exception as e:
     exit()
 
 
-def draw_rect(img, rect, color, thickness=2):
-    pt1 = (int(rect[0]), int(rect[1]))
-    pt2 = (int(rect[0] + rect[2]), int(rect[1] + rect[3]))
-    cv2.rectangle(img, pt1, pt2, color, int(thickness))
-
-
-def draw_line(img, pt1, pt2, color, thickness=2):
+def _draw_line(img, pt1, pt2, color, thickness=2):
     pt1 = (int(pt1[0]), int(pt1[1]))
     pt2 = (int(pt2[0]), int(pt2[1]))
     cv2.line(img, pt1, pt2, color, int(thickness))
 
 
-def draw_circle(img, pt, color, radius=4):
+def _draw_circle(img, pt, color, radius=4, thickness=-1):
     pt = (int(pt[0]), int(pt[1]))
-    cv2.circle(img, pt, radius, color, -1)
+    cv2.circle(img, pt, radius, color, int(thickness))
+
+
+def _draw_rect(img, rect, color, thickness=2):
+    p1 = (int(rect[0]), int(rect[1]))
+    p2 = (int(rect[0] + rect[2]), int(rect[1] + rect[3]))
+    cv2.rectangle(img, p1, p2, color, thickness)
+
+
+def _draw_cross(img, pt, color, size=4, thickness=2):
+    p0 = (pt[0] - size, pt[1] - size)
+    p1 = (pt[0] + size, pt[1] + size)
+    p2 = (pt[0] + size, pt[1] - size)
+    p3 = (pt[0] - size, pt[1] + size)
+    _draw_line(img, p0, p1, color, thickness)
+    _draw_line(img, p2, p3, color, thickness)
 
 
 def draw_joint(img, joint, thickness=3, color_scale=1):
@@ -52,47 +61,56 @@ def draw_joint(img, joint, thickness=3, color_scale=1):
         # move the origin to image center
         pt = joint[0] + np.array([img.shape[1] / 2, img.shape[0] / 2])
         # draw dot as circle
-        draw_circle(img, pt, color)
+        _draw_circle(img, pt, color)
         return
 
     # neck
     color = (s, 0, s)
     sho_center = (joint[jmap['lsho']] + joint[jmap['rsho']]) / 2
-    draw_line(img, sho_center, joint[jmap['head']], color, thickness)
+    _draw_line(img, sho_center, joint[jmap['head']], color, thickness)
 
     if 'lhip' in jmap and 'rhip' in jmap:
         # hip
         color = (s, 0, s / 2)
-        draw_line(img, joint[jmap['lhip']], joint[jmap['rhip']], color,
-                  thickness)
+        _draw_line(img, joint[jmap['lhip']], joint[jmap['rhip']], color,
+                   thickness)
 
         # center
         color = (0, s, s)
         hip_center = (joint[jmap['lhip']] + joint[jmap['rhip']]) / 2
-        draw_line(img, sho_center, hip_center, color, thickness)
+        _draw_line(img, sho_center, hip_center, color, thickness)
 
     # shoulder
     color = (0, s / 2, s)
-    draw_line(img, joint[jmap['lsho']], joint[jmap['rsho']], color, thickness)
+    _draw_line(img, joint[jmap['lsho']], joint[jmap['rsho']], color, thickness)
 
     # arm
     color = (s, 0, 0)
-    draw_line(img, joint[jmap['lsho']], joint[jmap['lelb']], color, thickness)
+    _draw_line(img, joint[jmap['lsho']], joint[jmap['lelb']], color, thickness)
     color = (0, s, 0)
-    draw_line(img, joint[jmap['rsho']], joint[jmap['relb']], color, thickness)
+    _draw_line(img, joint[jmap['rsho']], joint[jmap['relb']], color, thickness)
     color = (0, 0, s)
-    draw_line(img, joint[jmap['lelb']], joint[jmap['lwri']], color, thickness)
+    _draw_line(img, joint[jmap['lelb']], joint[jmap['lwri']], color, thickness)
     color = (s, s, 0)
-    draw_line(img, joint[jmap['relb']], joint[jmap['rwri']], color, thickness)
+    _draw_line(img, joint[jmap['relb']], joint[jmap['rwri']], color, thickness)
 
 
-def draw_loss_graph(train_loss_list, test_loss_list,
-                    train_color='blue', test_color='red'):
+def draw_loss_graph(train_loss_list, test_loss_list, train_epoch_list=None,
+                    test_epoch_list=None, train_color='blue', test_color='red',
+                    legend_loc='upper right', title=None):
     # Axis data
+    # Losses
     train_loss = np.asarray(train_loss_list)
-    train_epoch = np.arange(0, len(train_loss_list))
     test_loss = np.asarray(test_loss_list)
-    test_epoch = np.arange(0, len(test_loss_list))
+    # Epochs
+    if train_epoch_list:
+        train_epoch = np.asarray(train_epoch_list)
+    else:
+        train_epoch = np.arange(0, len(train_loss_list))
+    if test_epoch_list:
+        test_epoch = np.asarray(test_epoch_list)
+    else:
+        test_epoch = np.arange(0, len(test_loss_list))
 
     # Create new figure
     plt.clf()
@@ -120,10 +138,11 @@ def draw_loss_graph(train_loss_list, test_loss_list,
     # Settings
     ax.set_xlabel("epoch")
     ax.set_ylabel("loss rate")
-    ax.set_xlim([0, max(len(train_loss_list) - 1, len(test_loss_list) - 1, 5)])
-    ax.set_ylim(ymin=0)
-#     ax.legend(loc='upper right')
-    ax.legend(loc='lower left')
+    ax.set_xlim(left=0)
+    ax.set_ylim(bottom=0)
+    ax.legend(loc=legend_loc)
+    if title is not None:
+        ax.set_title(title)
 
     # Draw
     canvas = agg.FigureCanvasAgg(fig)

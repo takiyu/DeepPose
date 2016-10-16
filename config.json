@@ -1,0 +1,20 @@
+{
+    "flic_full_path": "/home/takiyu/Datasets/HumanBodyPose/FLIC/FLIC-full",
+    "flic_plus_path": "/home/takiyu/Datasets/HumanBodyPose/FLIC/tr_plus_indices.mat",
+    "flic_cache_path": "./flic_cache.npz",
+    "normalizer_cache_path": "./normalizer.npz",
+    "alexnet_caffemodel_path": "/home/takiyu/Datasets/caffemodel/bvlc_alexnet.caffemodel",
+    "facial_cascade_paths": [
+        "/usr/share/opencv/haarcascades/haarcascade_frontalface_alt.xml",
+        "/usr/share/opencv/lbpcascades/lbpcascade_frontalface.xml"
+    ],
+    "gpu": -1,
+    "n_loaders_train": 7,
+    "n_loaders_test": 1,
+    "n_epoch": 1000,
+    "batchsize": 2,
+    "port_pose": 8888,
+    "port_weight": 8889,
+    "port_lossgraph": 8890,
+    "outdir": "result"
+}

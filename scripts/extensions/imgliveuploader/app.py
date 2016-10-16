@@ -5,6 +5,7 @@ from flask import Flask, render_template
 from flask_socketio import SocketIO, emit
 import multiprocessing
 import numpy as np
+import os
 
 
 # logging
@@ -23,7 +24,8 @@ socketio_logger = getLogger('socketio')
 socketio_logger.setLevel(CRITICAL)
 
 
-IO_NAMESPACE = '/uploader'
+IO_NAMESPACE = '/liveuploader'
+ASYNC_MODE = 'eventlet'
 
 
 def decodeimg(img):
@@ -39,27 +41,18 @@ def decodeimg(img):
         return None
 
 
-def encodeimg(img, ext='.png'):
+def encodeimg(img, ext='.jpeg'):
     try:
         ret, img = cv2.imencode(ext, img)
         if not ret:
             raise
         img = img.tostring()
         img = base64.encodestring(img)
-        img = 'data:image/png;base64,' + img.decode('ascii')
+        img = 'data:image/jpeg;base64,' + img.decode('ascii')
         return img
     except Exception:
         logger.error('Failed to encodeimg()')
         return None
-
-
-def trimming(img, region):
-    x, y, w, h = region['x'], region['y'], region['w'], region['h']
-    x, y, w, h = int(x), int(y), int(w), int(h)
-    if (0 <= x and 0 <= y) and (0 < w and 0 < h) and \
-       (x + w < img.shape[1] and y + h < img.shape[0]):
-        img = img[y:y + h, x:x + w]
-    return img
 
 
 def encodeImgElement(data, key):
@@ -82,7 +75,7 @@ def new_server(request_queue, response_queue, stop_page, port, secret_key):
     # create server
     app = Flask(__name__, static_url_path='/static')
     app.config['SECRET_KEY'] = secret_key
-    socketio = SocketIO(app, async_mode='threading',
+    socketio = SocketIO(app, async_mode=ASYNC_MODE,
                         logger=False, engineio_logger=False)
 
     # rooting
@@ -100,20 +93,20 @@ def new_server(request_queue, response_queue, stop_page, port, secret_key):
 
     @socketio.on('connect', namespace=IO_NAMESPACE)
     def __on_upload_connect():
-        logger.info('New uploader connection is established')
+        logger.info('New live uploader connection is established')
 
     @socketio.on('disconnect', namespace=IO_NAMESPACE)
     def __on_upload_disconnect():
-        logger.info('Uploader connection is closed')
+        logger.info('Live uploader connection is closed')
 
     @socketio.on('upload_img', namespace=IO_NAMESPACE)
     def __on_upload_image(data):
-        logger.info('New image is received')
+        logger.debug('New image is received')
         # check need to output
         if request_queue is None:
             return
 
-        # decode from png base64 string
+        # decode from jpeg base64 string
         try:
             img = data['img']
         except KeyError:
@@ -122,13 +115,6 @@ def new_server(request_queue, response_queue, stop_page, port, secret_key):
         img = decodeimg(img)
         if img is None:
             return
-
-        # trimming
-        try:
-            region = data['region']
-            img = trimming(img, region)
-        except KeyError:
-            pass
 
         # put into output queue
         request_queue.put(img)
@@ -140,7 +126,7 @@ def new_server(request_queue, response_queue, stop_page, port, secret_key):
             # encode image
             encodeImgElement(resp_data, key='img')
             # emit
-            logger.info('Emit response')
+            logger.debug('Emit response')
             emit('response', resp_data, namespace=IO_NAMESPACE)
 
     # start server
@@ -150,7 +136,7 @@ def new_server(request_queue, response_queue, stop_page, port, secret_key):
 
 
 def start(request_queue, response_queue=None, stop_page=True, port=5000,
-          secret_key='SECRET_KEY'):
+          secret_key=os.urandom(24)):
     '''Start new image uploading server on `port`.
     This function create new daemon process and start it.
 
@@ -159,15 +145,14 @@ def start(request_queue, response_queue=None, stop_page=True, port=5000,
             It returns a image (np.ndarray).
         * response_queue (multiprocessing.Queue): input queue.
             The input type is dict and it can contain
-            'img': (np.ndarray), 'img_options': {'region': (bool)},
-            'msg': (str).
+            'img': (np.ndarray), 'msg': (str).
         * stop_page (bool): enable server stop page "/stop".
         * port (int): server port
 
     If there are no need to use IO, set corresponding queues to `None`.
     '''
     process = multiprocessing.Process(target=new_server,
-                                      args=(request_queue, response_queue, stop_page,
-                                            port, secret_key))
+                                      args=(request_queue, response_queue,
+                                            stop_page, port, secret_key))
     process.daemon = True
     process.start()
