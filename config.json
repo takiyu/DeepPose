@@ -5,14 +5,14 @@
     "normalizer_cache_path": "./normalizer.npz",
     "alexnet_caffemodel_path": "/home/takiyu/Datasets/caffemodel/bvlc_alexnet.caffemodel",
     "facial_cascade_paths": [
-        "/usr/share/opencv/haarcascades/haarcascade_frontalface_alt.xml",
-        "/usr/share/opencv/lbpcascades/lbpcascade_frontalface.xml"
+        "/usr/local/share/OpenCV/haarcascades/haarcascade_frontalface_alt.xml",
+        "/usr/local/share/OpenCV/lbpcascades/lbpcascade_frontalface.xml"
     ],
-    "gpu": -1,
+    "gpu": 0,
     "n_loaders_train": 7,
     "n_loaders_test": 1,
     "n_epoch": 1000,
-    "batchsize": 2,
+    "batchsize": 64,
     "port_pose": 8888,
     "port_weight": 8889,
     "port_lossgraph": 8890,

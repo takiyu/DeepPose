@@ -182,7 +182,7 @@ class FaceBasedPoseNormalizer(object):
         train_size = min(len(train_dataset), max_size)
         for i in six.moves.xrange(train_size):
             # Show progress
-            if i % 10 == 0:
+            if i % 100 == 0:
                 logger.info('  {} / {}'.format(i, train_size))
             # Load raw poses
             img, joint, facial_rect = train_dataset.get_raw(i)
@@ -191,7 +191,7 @@ class FaceBasedPoseNormalizer(object):
         # Generate parameters
         self._gen_param()
 
-    def _gen_param(self, scale_sigma=4.0):
+    def _gen_param(self, scale_sigma=3.5):
         ''' Generate parameters from trained data
         `Scale sigma` is decided by [3-sigma + alpha]
         '''
@@ -235,7 +235,7 @@ class FaceBasedPoseNormalizer(object):
 
 
 def setup_pose_normalizer(cache_path, train_dataset=None,
-                          n_normalizer_sample=1000):
+                          n_normalizer_sample=3000):
     ''' Setup FaceBasedPoseNormalizer
     When normalizer is trained, `train_dataset.get_raw(i)` will be called and
     should returns [img, joint, facial_rect].

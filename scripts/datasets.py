@@ -181,8 +181,8 @@ class FLIC(chainer.dataset.DatasetMixin):
         # === Pose Normalize (resize to IMG_SIZE) ===
         if self.pose_normalizer is not None:
             # Random cropping
-            rect_scale = np.random.normal(loc=1.0, scale=0.3)
-            rect_scale = min(max(rect_scale, 0.90), 1.10)  # clamp
+            rect_scale = np.random.normal(loc=1.00, scale=0.3)
+            rect_scale = min(max(rect_scale, 0.95), 1.05)  # clamp
             mat = self.pose_normalizer.calc_matrix(img_w, img_h, facial_rect,
                                                    rect_scale=rect_scale)
             # Random flipping
@@ -231,9 +231,9 @@ def setup_flic(cache_path, face_detector, flic_full_path=None,
             logger.critical('`flic_full_path` and `flic_plus_path` are needed'
                             ' to load raw FLIC')
         flic_train.setup_raw(flic_full_path, flic_plus_path, train=True)
-        logger.info('FLIC dataset (train): {}'.format(flic_train))
+        logger.info('FLIC dataset (train): {}'.format(len(flic_train)))
         flic_test.setup_raw(flic_full_path, flic_plus_path, train=False)
-        logger.info('FLIC dataset (test): {}'.format(flic_test))
+        logger.info('FLIC dataset (test): {}'.format(len(flic_test)))
 
         # Save cache
         logger.info('Save FLIC cache to "{}"'.format(cache_path))

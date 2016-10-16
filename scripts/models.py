@@ -35,6 +35,7 @@ class DeepPoseModel(chainer.Chain):
         )
         self.train = True
         self.report = True
+        self.backward = True
 
     def __call__(self, x_img, t_joint):
         # Alexnet
@@ -49,16 +50,18 @@ class DeepPoseModel(chainer.Chain):
         h = F.relu(self.conv5(h))  # conv5
         h = F.max_pooling_2d(h, 3, stride=2, pad=0)  # pool5
 
-        h = F.dropout(F.relu(self.fc6(h)), ratio=0.6, train=self.train)  # fc6
-        h = F.dropout(F.relu(self.fc7(h)), ratio=0.6, train=self.train)  # fc7
+#         h = F.dropout(F.relu(self.fc6(h)), ratio=0.6, train=self.train)  # fc6
+#         h = F.dropout(F.relu(self.fc7(h)), ratio=0.6, train=self.train)  # fc7
+        h = F.relu(self.fc6(h))  # fc6
+        h = F.relu(self.fc7(h))  # fc7
         h_joint = self.fc8(h)  # fc8
 
         # Loss
-        if self.train:
+        if self.backward:
             loss = F.mean_squared_error(h_joint, t_joint)
 
         if self.report:
-            if self.train:
+            if self.backward:
                 # Report losses
                 chainer.report({'loss': loss}, self)
 
@@ -75,7 +78,7 @@ class DeepPoseModel(chainer.Chain):
                             'conv4_w': {'weights': self.conv4.W},
                             'conv5_w': {'weights': self.conv5.W}}, self)
 
-        if self.train:
+        if self.backward:
             return loss
         else:
             return {'img': x_img, 'joint': h_joint}
